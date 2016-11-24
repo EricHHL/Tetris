@@ -6,7 +6,7 @@ function menu:init()
 
     originalSize = vector(love.graphics.getWidth(),love.graphics.getHeight())
 
-	love.graphics.setBackgroundColor(0, 0, 0)
+	love.graphics.setBackgroundColor(Color(120):value())
     love.graphics.setFont(font)
 
 
@@ -20,14 +20,13 @@ function menu:init()
         end
     end
 
-    pnMenu = GUI:newPanel(0  ,100,love.graphics.getWidth(),love.graphics.getHeight()-200, {layout = "boxV", childHalign = "center", childValign = "center"})
+    pnMenu = GUI.Frame({y = 100, h = love.graphics.getHeight()-200, layout = "boxV"})
 
-    pnMenu:addChild(GUI:newLabel("Tetris", 0,0,200))
-
-    pnMenu:addChild(GUI:newButton("Jogar", 0, 0, 200, 60, function(b) btJogarClick(b) end, {color = Color(50, 50, 200), hoverColor = Color(80, 80, 250)}))
-    pnMenu:addChild(GUI:newButton("Placar", 0, 0, 200, 60, function(b) btPlacarClick(b) end, {color = Color(50, 50, 200), hoverColor = Color(80, 80, 250)}))
-    pnMenu:addChild(GUI:newButton("Sair", 0, 0, 200, 60, function(b) btSairClick(b) end, {color = Color(50, 50, 200), hoverColor = Color(80, 80, 250)}))
-
+    pnMenu:addChild(GUI.Label({text = "Tetris"}))
+    
+    pnMenu:addChild(GUI.Button({text = "Jogar", callback = btJogarClick, color = Color(50, 50, 200), hoverColor = Color(80, 80, 250)}))
+    pnMenu:addChild(GUI.Button({text = "Placar", callback = btPlacarClick, color = Color(50, 50, 200), hoverColor = Color(80, 80, 250)}))
+    pnMenu:addChild(GUI.Button({text = "Sair", callback = btSairClick, color = Color(50, 50, 200), hoverColor = Color(80, 80, 250)}))
 end
 
 function menu:enter()
@@ -51,7 +50,7 @@ end
 function menu:draw()
     love.graphics.setColor(10,10,10,200)
     love.graphics.draw(menuBgBatch)
-    
+
     GUI:draw(pnMenu)
 end
 

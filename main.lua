@@ -7,7 +7,7 @@ Class = require("lib.hump.class")
 Signal = require("lib.hump.signal")
 Camera = require("lib.hump.camera")
 
-gui = require("gui")
+gui = require("lib.gui.gui")
 
 highscore = require("lib.sick")
 

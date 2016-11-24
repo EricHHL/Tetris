@@ -17,6 +17,8 @@ inputEnable = true
 
 score = 0
 
+-- TODO: No final, mostrar maior combo e tempo jogado
+
 function game:init()
 
 	texSideMenu = love.graphics.newImage("textures/sideMenu.png")
@@ -55,42 +57,39 @@ function game:init()
     }
 
     --Inicializa GUI
-    pnPause = GUI:newPanel(gm.centerPos.x+gm.tileSize/2 - 150, gm.centerPos.y - 120, 300, 240, 
-        {panelType = "textBox", color = Color(200,200,200,255), layout = "boxV", childHalign = "center"})
-    pnPause:addChild(GUI:newLabel("Pausado", 0, 0, 160, {color = Color(0,0,0,255), valign = "center"}))
-    pnPause:addChild(GUI:newButton("Continuar", 0, 0, 200, 60, function() pause = false end, {valign = "bottom", color = Color(50,50,200)}))
-    pnPause:addChild(GUI:newButton("Menu",      0, 0, 200, 60, function() 
-            
+    frPause = GUI.Frame({x = gm.centerPos.x+gm.tileSize/2 - 150, y =gm.centerPos.y - 120, w = 300, h = 240, panelType = "textBox", color = Color(200), layout = "boxV", childHalign = "center"})
+    frPause:addChild(GUI.Label({text = "Pausado", color = Color(0), valign = "center"}))
+    frPause:addChild(GUI.Button({text = "Continuar", callback = function() pause = false end, valign = "bottom"}))
+    frPause:addChild(GUI.Button({text = "Menu", callback = function() 
             Timer.cancel(nextUpdateHandle)
             Gamestate.switch(menu) 
-        end, {valign = "top", color = Color(50,50,200)}))
+        end, valign = "top"}))
     
-    pnGameover = GUI:newPanel(gm.centerPos.x+gm.tileSize/2 - 150, gm.centerPos.y - 200, 300, 400, 
-        {panelType = "textBox", color = Color(200,200,200,255), layout = "boxV", childHalign = "center"})
+    frGameOver = GUI.Frame({x = gm.centerPos.x+gm.tileSize/2 - 150, y =gm.centerPos.y - 200, w = 300, h =400, panelType = "textBox", color = Color(200), layout = "boxV", childHalign = "center"})
     
-    pnGameover:addChild(GUI:newLabel("Game Over", 0, 0, 300, {color = Color(0,0,0)}))
-    lbPontuacao = GUI:newLabel("", 0, 0, 300, {font = smallFont, color = Color(0,0,0)})
-    pnGameover:addChild(lbPontuacao)
+    frGameOver:addChild(GUI.Label({text = "Game Over", color = Color(0)}))
+    lbPontuacao = GUI.Label({font = smallFont, color = Color(0)})
+    frGameOver:addChild(lbPontuacao)
 
-    pnHighScore = GUI:newPanel(0,0,300,250, {layout = "boxV", childHalign = "center", weight = 3})
+    frHighscore = GUI.Frame({w = 300, h = 250, layout = "boxV", childHalign = "center", weight = 3})
 
-    lbRecord = GUI:newLabel("asd", 0, 0, 300, {font = smallFont, color = Color(0,0,0)})
-    tbName = GUI:newTextBox(0,0, 200, 40, {callback = function() btSalvarClick() end})
-    btSalvar = GUI:newButton("Salvar", 0, 0, 200, 60, function() btSalvarClick() end, {weight = 1.5})
-    pnHighScore:addChild(lbRecord)
-    pnHighScore:addChild(tbName)
-    pnHighScore:addChild(btSalvar)
+    lbRecord = GUI.Label({font = smallFont, color = Color(0)})
+    tbName = GUI.TextBox({callback = function() btSalvarClick() end})
+    btSalvar = GUI.Button({text = "Salvar", callback = function() btSalvarClick() end, weight = 1.5})
+    frHighscore:addChild(lbRecord)
+    frHighscore:addChild(tbName)
+    frHighscore:addChild(btSalvar)
 
-    pnGameover2 = GUI:newPanel(0,0,300,250, {layout = "boxV", childHalign = "center", weight = 3})
+    frGameOver2 = GUI.Frame({w = 300, h = 250, layout = "boxV", childHalign = "center", weight = 3, text = "go2"})
 
-    pnGameover2:addChild(GUI:newPanel(0,0,0,0))
-    pnGameover2:addChild(GUI:newButton("Novo jogo", 0, 0, 200, 60, function() Gamestate.switch(game) end))
-    pnGameover2:addChild(GUI:newButton("Menu", 0, 0, 200, 60, function() Gamestate.switch(menu) end))
+    frGameOver2:addChild(GUI.Frame())
+    frGameOver2:addChild(GUI.Button({text = "Novo jogo", callback = function() Gamestate.switch(game) end}))
+    frGameOver2:addChild(GUI.Button({text = "Menu", callback = function() Gamestate.switch(menu) end}))
 
-    pnHighScore.active = false
+    frHighscore.active = false
 
-    pnGameover:addChild(pnGameover2)
-    pnGameover:addChild(pnHighScore)
+    frGameOver:addChild(frGameOver2)
+    frGameOver:addChild(frHighscore)
 
 
     math.randomseed(os.time())
@@ -222,11 +221,11 @@ function game:draw()
     -- love.graphics.print("Ultima: "..lastScore, 10, 30)
 
     if (pause) then
-        GUI:draw(pnPause)
+        GUI:draw(frPause)
     end
 
     if (isGameOver) then
-        GUI:draw(pnGameover)
+        GUI:draw(frGameOver)
     end
 end
 
@@ -399,7 +398,7 @@ end
 
 -- Retorna nova instancia de peça usando o vetor pieces
 function newPiece()
-    newStart = round(math.random(0, 3))
+    newStart = round(love.math.random(0, 3))
 
     if (newStart == 0) then
         pieceDirection = vector(0, 1)
@@ -443,11 +442,10 @@ function game:mousepressed(x, y, button)
         gm.grid[math.floor(x / gm.tileSize)][math.floor(y / gm.tileSize)] = not gm.grid[math.floor(x / gm.tileSize)][math.floor(y / gm.tileSize)]
     end
     if pause then
-        GUI:mousepressed(pnPause, x, y, button)
+        GUI:mousepressed(frPause, x, y, button)
     end
     if isGameOver then
-        print("é gameover")
-        GUI:mousepressed(pnGameover, x, y, button)
+        GUI:mousepressed(frGameOver, x, y, button)
     end
 end
 
@@ -474,7 +472,7 @@ function gameOver()
     print("Game over; Pontuacao: " .. score)
     isGameOver = true
 
-    lbPontuacao.text = "Pontuação: "..score
+    lbPontuacao:setText("Pontuação: "..score)
     for i, sc, name in highscore() do
         if (i <= 10) then
             if (score>sc) then
@@ -485,23 +483,22 @@ function gameOver()
         end
     end
     if isHighscore then
-        lbRecord.text = highscorePos.."º lugar"
-        pnHighScore.active = true
-        pnGameover2.active = false
+        lbRecord:setText(highscorePos.."º lugar")
+        frHighscore.active = true
+        frGameOver2.active = false
     else
-        print("nao foi highScore")
-        pnHighScore.active = false
-        pnGameover2.active = true
+        frHighscore.active = false
+        frGameOver2.active = true
     end
 
-    pnGameover:refresh()
+    frGameOver:refresh()
 end
 
 function btSalvarClick()
     highscore.add(tbName.text, score)
     highscore.save()
     isHighscore = false
-    pnHighScore.active = false
-    pnGameover2.active = true
-    pnGameover:refresh()
+    frHighscore.active = false
+    frGameOver2.active = true
+    frGameOver:refresh()
 end
