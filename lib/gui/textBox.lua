@@ -1,3 +1,5 @@
+local gui = nil
+
 local function newDefaultTextBox()
 	return {
 		--Basico
@@ -53,7 +55,7 @@ local function newDefaultTextBox()
 		end,
 
 		refresh = function(self)
-			self.batch = GUI:newPanel(self.panelType, self.w, self.h)
+			self.batch = gui:newPanel(self.panelType, self.w, self.h)
 			self.fontY = (self.h - panelTypes[self.panelType].borderSize*2-self.font:getHeight()) / 2
 			self.fontX = 5
 		end,
@@ -62,7 +64,9 @@ local function newDefaultTextBox()
 	}
 end
 
-return function(args)
+return function(self, args)
+	assert(self.isGUI, "Use a colon to call this function")
+	gui = self
 	args = args or {}
 	defaultTextBox = newDefaultTextBox()
 	local tb = {}

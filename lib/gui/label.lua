@@ -1,3 +1,5 @@
+local gui = nil
+
 local function newDefaultLabel()
 	return {
 		text = "Label",
@@ -34,7 +36,9 @@ local function newDefaultLabel()
 end
 
 
-return function(args)
+return function(self, args)
+	assert(self.isGUI, "Use a colon to call this function")
+	gui = self
 	args = args or {}
 	defaultLabel = newDefaultLabel()
 	local lb = {}

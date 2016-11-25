@@ -1,3 +1,5 @@
+gui = nil
+
 local function newDefaultFrame()
 	return {
 		panelType = "none",
@@ -29,7 +31,7 @@ local function newDefaultFrame()
 			end
 			
 			for i,child in ipairs(self.children) do
-				GUI:draw(child)
+				gui:draw(child)
 			end
 		end,
 
@@ -39,7 +41,7 @@ local function newDefaultFrame()
 		end,
 
 		refresh = function(self)
-			self.batch = GUI:newPanel(self.panelType, self.w, self.h)
+			self.batch = gui:newPanel(self.panelType, self.w, self.h)
 			if (self.layout ~= "absolute") then
 				layoutFunctions[self.layout](self)
 			end
@@ -49,7 +51,9 @@ local function newDefaultFrame()
 	}
 end
 
-return function(args)
+return function(self, args)
+	assert(self.isGUI, "Use a colon to call this function")
+	gui = self
 	args = args or {}
 	defaultFrame = newDefaultFrame()
 

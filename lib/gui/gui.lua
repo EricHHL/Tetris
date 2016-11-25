@@ -117,6 +117,8 @@ local function init()
 	gui.Button = require(BASE.."button")
 	gui.TextBox = require(BASE.."textBox")
 
+	gui.isGUI = true
+
 	return gui
 end
 

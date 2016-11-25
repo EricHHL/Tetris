@@ -57,34 +57,34 @@ function game:init()
     }
 
     --Inicializa GUI
-    frPause = GUI.Frame({x = gm.centerPos.x+gm.tileSize/2 - 150, y =gm.centerPos.y - 120, w = 300, h = 240, panelType = "textBox", color = Color(200), layout = "boxV", childHalign = "center"})
-    frPause:addChild(GUI.Label({text = "Pausado", color = Color(0), valign = "center"}))
-    frPause:addChild(GUI.Button({text = "Continuar", callback = function() pause = false end, valign = "bottom"}))
-    frPause:addChild(GUI.Button({text = "Menu", callback = function() 
+    frPause = GUI:Frame({x = gm.centerPos.x+gm.tileSize/2 - 150, y =gm.centerPos.y - 120, w = 300, h = 240, panelType = "textBox", color = Color(200), layout = "boxV", childHalign = "center"})
+    frPause:addChild(GUI:Label({text = "Pausado", color = Color(0), valign = "center"}))
+    frPause:addChild(GUI:Button({text = "Continuar", callback = function() pause = false end, valign = "bottom"}))
+    frPause:addChild(GUI:Button({text = "Menu", callback = function() 
             Timer.cancel(nextUpdateHandle)
             Gamestate.switch(menu) 
         end, valign = "top"}))
     
-    frGameOver = GUI.Frame({x = gm.centerPos.x+gm.tileSize/2 - 150, y =gm.centerPos.y - 200, w = 300, h =400, panelType = "textBox", color = Color(200), layout = "boxV", childHalign = "center"})
+    frGameOver = GUI:Frame({x = gm.centerPos.x+gm.tileSize/2 - 150, y =gm.centerPos.y - 200, w = 300, h =400, panelType = "textBox", color = Color(200), layout = "boxV", childHalign = "center"})
     
-    frGameOver:addChild(GUI.Label({text = "Game Over", color = Color(0)}))
-    lbPontuacao = GUI.Label({font = smallFont, color = Color(0)})
+    frGameOver:addChild(GUI:Label({text = "Game Over", color = Color(0)}))
+    lbPontuacao = GUI:Label({font = smallFont, color = Color(0)})
     frGameOver:addChild(lbPontuacao)
 
-    frHighscore = GUI.Frame({w = 300, h = 250, layout = "boxV", childHalign = "center", weight = 3})
+    frHighscore = GUI:Frame({w = 300, h = 250, layout = "boxV", childHalign = "center", weight = 3})
 
-    lbRecord = GUI.Label({font = smallFont, color = Color(0)})
-    tbName = GUI.TextBox({callback = function() btSalvarClick() end})
-    btSalvar = GUI.Button({text = "Salvar", callback = function() btSalvarClick() end, weight = 1.5})
+    lbRecord = GUI:Label({font = smallFont, color = Color(0)})
+    tbName = GUI:TextBox({callback = function() btSalvarClick() end})
+    btSalvar = GUI:Button({text = "Salvar", callback = function() btSalvarClick() end, weight = 1.5})
     frHighscore:addChild(lbRecord)
     frHighscore:addChild(tbName)
     frHighscore:addChild(btSalvar)
 
-    frGameOver2 = GUI.Frame({w = 300, h = 250, layout = "boxV", childHalign = "center", weight = 3, text = "go2"})
+    frGameOver2 = GUI:Frame({w = 300, h = 250, layout = "boxV", childHalign = "center", weight = 3, text = "go2"})
 
-    frGameOver2:addChild(GUI.Frame())
-    frGameOver2:addChild(GUI.Button({text = "Novo jogo", callback = function() Gamestate.switch(game) end}))
-    frGameOver2:addChild(GUI.Button({text = "Menu", callback = function() Gamestate.switch(menu) end}))
+    frGameOver2:addChild(GUI:Frame())
+    frGameOver2:addChild(GUI:Button({text = "Novo jogo", callback = function() Gamestate.switch(game) end}))
+    frGameOver2:addChild(GUI:Button({text = "Menu", callback = function() Gamestate.switch(menu) end}))
 
     frHighscore.active = false
 
