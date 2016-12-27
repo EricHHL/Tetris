@@ -42,7 +42,7 @@ function love.load()
     texTile = love.graphics.newImage("textures/tile2.png")
     texTileBg = love.graphics.newImage("textures/tile2bg.png")
     texTextBox = love.graphics.newImage("textures/tileTextBox.png")
-    texButton = love.graphics.newImage("textures/tile2Bt.png")
+    texButton = love.graphics.newImage("textures/tile2bt.png")
 
 	GUI = gui()
     GUI:newPanelType("button", texButton, 8, 48)
