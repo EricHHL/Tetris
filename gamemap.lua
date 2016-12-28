@@ -113,16 +113,20 @@ function GameMap:deleteLayer(l)
 
 	for i= c-l,c+l do
 		self.grid[i][j] = false
+		Signal.emit("tileDeleted", vector(i,j))
 		if(j~=i)then
 			self.grid[j][i] = false
+			Signal.emit("tileDeleted", vector(j,i))
 		end
 	end
 
 	i = c+l
 	for j=c-l,c+l do
 		self.grid[i][j] = false
+		Signal.emit("tileDeleted", vector(i,j))
 		if(j~=i)then
 			self.grid[j][i] = false
+			Signal.emit("tileDeleted", vector(j,i))
 		end
 	end
 end

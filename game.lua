@@ -144,7 +144,23 @@ function game:init()
 
     end )
 
-	require("touchInput")
+    Signal.register("tileDeleted", function(v)
+    	local aTile = {
+            type = "texture",
+            texture = texTile,
+            pos = gm:localToScreen(vector(v.x,v.y)),
+            color = gm.colorGrid[v.x][v.y]:clone(),
+            texScale = scale,
+            done = false
+        }
+        Timer.tween(updateFreq*2 	, aTile, {texScale = 0}, "out-quad", function()
+            aTile["done"] = true
+        end )
+        Timer.tween(updateFreq, aTile["pos"], gm.centerPos + vector(tSize/2,tSize/2))
+        anims[aTile] = true
+    end)
+    
+    require("touchInput")
 
 end
 
