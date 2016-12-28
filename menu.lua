@@ -10,9 +10,9 @@ function menu:init()
     love.graphics.setFont(font)
 
 
-    numTilesX = math.ceil(love.graphics.getWidth() / texTileBg:getWidth())*2.2
-    numTilesY = math.ceil(love.graphics.getHeight() / texTileBg:getHeight())*2.2
-    menuBgBatch = love.graphics.newSpriteBatch(texTileBg, numTilesX*numTilesY, "static")
+    numTilesX =  love.graphics.getWidth() / texTileBg:getWidth() * 2
+    numTilesY =  love.graphics.getHeight() / texTileBg:getHeight() * 2
+    menuBgBatch = love.graphics.newSpriteBatch(texTileBg, numTiles, "static")
     for i=0,numTilesX do
         for j=0,numTilesY do
             sPos = vector(i*texTileBg:getWidth()/2, j*texTileBg:getHeight()/2)

@@ -15,40 +15,23 @@ nextUpdateHandle = nil
 
 inputEnable = true
 
-gdx = 0
-gdy = 0
-
-gx = 0
-gy = 0
-
 score = 0
 
 -- TODO: No final, mostrar maior combo e tempo jogado
-
-
 
 function game:init()
 
 	texSideMenu = love.graphics.newImage("textures/sideMenu.png")
     texBorder = love.graphics.newImage("textures/bg.png")
     borderSize = 20
-
-    local tSize = 22
-    local mSize = 25
-
-    borderScale = (mSize*tSize)*(texBorder:getWidth()/(texBorder:getWidth()-borderSize)) / (texBorder:getWidth())
-    mPos = vector(10*borderScale,10*borderScale)
-    if love.system.getOS() == "Android" then
-    	tSize = math.floor(love.graphics.getHeight() / mSize)
-    	borderScale = (mSize*tSize)*(texBorder:getWidth()/(texBorder:getWidth()-borderSize)) / (texBorder:getWidth())
-    	mPos = vector(love.graphics.getWidth()/2 - (tSize*mSize)/2, 0)
-    end
-    gm = GameMap(mSize, tSize, mPos)
+    
+    borderScale = (31*22)*(texBorder:getWidth()/(texBorder:getWidth()-borderSize)) / (texBorder:getWidth())
+    gm = GameMap(31, 22,vector(10*borderScale,10*borderScale))
     windowSize = vector((texBorder:getWidth() + texSideMenu:getWidth())*borderScale,texBorder:getWidth()*borderScale)
     love.window.setMode(windowSize.x, windowSize.y, { resizable = false, vsync = false, borderless = false })
     scale = gm.tileSize / texTile:getWidth()
 
-    bgBatch = love.graphics.newSpriteBatch(texTileBg, mSize*mSize, "static")
+    bgBatch = love.graphics.newSpriteBatch(texTileBg, 31*31, "static")
     for i=0,gm.size-1 do
     	for j=0,gm.size-1 do
     		sPos = gm:localToScreen(vector(i,j))
@@ -153,13 +136,6 @@ function game:init()
         end
 
     end )
-
-	if love.system.getOS() == "Android" then
-		require("touchInput")
-	else
-		require("keyboardInput")
-	end
-
 end
 
 function game:enter()
@@ -235,20 +211,14 @@ function game:draw()
     -- Desenha UI
     -- TODO: substituir isso com a nova GUI 
 	love.graphics.setColor(255,255,255)    
-    --love.graphics.draw(texBorder, mPos.x, 0, 0, borderScale, borderScale)
-    --love.graphics.draw(texSideMenu, love.graphics.getWidth()-texSideMenu:getWidth(), 0, 0, borderScale, borderScale)
+    love.graphics.draw(texBorder, 0, 0, 0, borderScale, borderScale)
+    love.graphics.draw(texSideMenu, texBorder:getWidth()*borderScale, 0, 0, borderScale, borderScale)
 
 
     love.graphics.setColor(255, 255, 255)
 
     love.graphics.print("Pontos: " .. score, 10, 10)
     -- love.graphics.print("Ultima: "..lastScore, 10, 30)
-
-    --[[if gdx then
-    	love.graphics.print("dx = "..gx, 10, 50)
-    	love.graphics.print("dy = "..gy, 10, 80)
-    end
-    love.graphics.print(love.window.getPixelScale(), 100,100)]]
 
     if (pause) then
         GUI:draw(frPause)
@@ -259,24 +229,55 @@ function game:draw()
     end
 end
 
-function movePiece(v)
-	newPos = curPiece:move(v)
-	if (isPiecePosValid(newPos) == 0) then
-        curPiece.iPos = newPos
-        TEsound.play(sndPieceMove)
-    end
-end
-
 function game:keypressed(key)
     GUI:keypressed(key)
     if (pause or isGameOver) then
         return
     end
-    if keyInput then 
-    	print("asd")
-    	keyInput(key)
+    if (pieceDirection.x == 0) then
+        if key == 'right' and curPiece.iPos.x <(gm.size - 1) then
+            newPos = curPiece:move(vector(1, 0))
+            if (isPiecePosValid(newPos) == 0) then
+                curPiece.iPos = newPos
+                TEsound.play(sndPieceMove)
+            end
+        elseif key == 'left' and curPiece.iPos.x > 0 then
+            newPos = curPiece:move(vector(-1, 0))
+            if (isPiecePosValid(newPos) == 0) then
+                curPiece.iPos = newPos
+                TEsound.play(sndPieceMove)
+            end
+        end
+
+        if (pieceDirection.y == 1 and key == 'down') or(pieceDirection.y == -1 and key == 'up') and inputEnable then
+            dropPiece()
+        end
+    else
+        if key == 'up' and curPiece.iPos.y > 0 then
+            newPos = curPiece:move(vector(0, -1))
+            if (isPiecePosValid(newPos) == 0) then
+                curPiece.iPos = newPos
+                TEsound.play(sndPieceMove)
+            end
+        elseif key == 'down' and curPiece.iPos.y <(gm.size - 1) then
+            newPos = curPiece:move(vector(0, 1))
+            if (isPiecePosValid(newPos) == 0) then
+                curPiece.iPos = newPos
+                TEsound.play(sndPieceMove)
+            end
+        end
+
+        if (pieceDirection.x == 1 and key == 'right') or(pieceDirection.x == -1 and key == 'left') and inputEnable then
+            dropPiece()
+        end
     end
-    
+
+    if key == 'space' then
+        rotatePiece()
+    end
+
+    -- problema: Isso vai resetar a animação toda vez que qualquer tecla for pressionada
+    animatePiece()
     
     if (key == 'z') then
         gameOver()
@@ -310,7 +311,7 @@ function gameUpdate()
     elseif (pathIsClear == 1) then
         for indT, tile in ipairs(curPiece.tiles) do
             tilePos = tile + curPiece.iPos
-            if ((tilePos.x < 1 or tilePos.x > gm.size or tilePos.y < 1 or tilePos.y > gm.size) or gm.grid[tilePos.x][tilePos.y]) then
+            if (gm.grid[tilePos.x][tilePos.y]) then
                 gameOver()
                 return
             else
@@ -353,7 +354,6 @@ function isPosValid(pos)
     if (pos.x < 1 or pos.x > gm.size or pos.y < 1 or pos.y > gm.size) then
         return 2
     end
-
     if (gm.grid[pos.x][pos.y]) then
         return 1
     end
@@ -482,7 +482,7 @@ function gameOver()
             end
         end
     end
-    if isHighscore and love.system.getOS() ~= "Android" then
+    if isHighscore then
         lbRecord:setText(highscorePos.."º lugar")
         frHighscore.active = true
         frGameOver2.active = false
