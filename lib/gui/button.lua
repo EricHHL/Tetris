@@ -1,13 +1,9 @@
-local gui = nil
-
 local function newDefaultButton()
-	return {
+	local bt = {
 		text = "Button",
 		panelType = "button",
-		x = 0,
-		y = 0,
-		w = 200,
-		h = 60,
+		w = 200 * love.window.getPixelScale(),
+		h = 60 * love.window.getPixelScale(),
 		callback = function() end,
 		color = Color(255),
 		hoverColor = Color(200),
@@ -18,46 +14,48 @@ local function newDefaultButton()
 		halign = "parent",
 		valign = "parent",
 		weight = 1,
-		wType = widgetType.button,
-
-		drawSelf = function(self)
-			--[[if ((mx > self.x) and (mx < self.x + self.w) and (my > self.y) and (my < self.y + self.h)) then 	--Se o mouse estiver em cima do botao
-				love.graphics.setColor(self.hoverColor:value())
-			else]]
-				--No android não tem hover
-				love.graphics.setColor(self.color:value())
-			--end
-			love.graphics.draw(self.batch, self.x, self.y, 0, 1, 1)
-			love.graphics.setColor(self.textColor:value())
-			love.graphics.setFont(self.font)
-			love.graphics.printf(self.text, self.x+panelTypes[self.panelType].borderSize, self.y + self.fontY + panelTypes[self.panelType].borderSize, self.w-panelTypes[self.panelType].borderSize*2, self.textAlign)
-		end,
-
-		refresh = function(self)
-			self.batch = gui:newPanel(self.panelType, self.w, self.h)
-			self.fontY = (self.h - panelTypes[self.panelType].borderSize*2 - self.font:getHeight()) / 2
-		end,
-
-		active = true
+		wType = widgetType.button
 	}
-end
 
-return function(self, args)
-	assert(self.isGUI, "Use a colon to call this function")
-	gui = self
-	args = args or {}
-	defaultButton = newDefaultButton()
-	local bt = {}
-
-	for k,v in pairs(defaultButton) do
-		bt[k] = args[k] or v
+	function bt:drawSelf()
+		--[[if ((self.gui.mouse.x > self.realX) and (self.gui.mouse.x < self.realX + self.realW) and (self.gui.mouse.y > self.realY) and (self.gui.mouse.y < self.realY + self.realH)) then 	--Se o mouse estiver em cima do botao
+			love.graphics.setColor(self.hoverColor:value())
+		else]]	--Android não tem hover
+			love.graphics.setColor(self.color:value())
+		--end
+		if (not panelTypes[self.panelType]) then
+			love.graphics.rectangle("fill", self.realX, self.realY, self.realW, self.realH, 12, 8)
+		else
+			love.graphics.draw(self.batch, self.realX, self.realY, 0, 1, 1)
+		end
+		love.graphics.setColor(self.textColor:value())
+		love.graphics.setFont(self.font)
+		local border = 5
+		if (panelTypes[self.panelType]) then
+			border = panelTypes[self.panelType].borderSize
+		end
+		love.graphics.printf(self.text, self.realX+border, self.realY + self.fontY + border, self.realW-border*2, self.textAlign)
 	end
 
-	bt.w = bt.w * love.window.getPixelScale()
-	bt.h = bt.h * love.window.getPixelScale()
+	function bt:refresh()
+		if (panelTypes[self.panelType]) then
+			self.batch = self.gui:newPanel(self.panelType, self.realW, self.realH)
+		end
+		local border = 5
+		if (panelTypes[self.panelType]) then
+			border = panelTypes[self.panelType].borderSize
+		end
+		self.fontY = (self.realH - border*2 - self.font:getHeight()) / 2
+	end
 
-
-	bt:refresh()
-
+	function bt:mousepressed(e)
+		if (self.callback) then
+			self:callback(e)
+		end
+		return true
+	end
+	
 	return bt
 end
+
+return Widget(newDefaultButton)

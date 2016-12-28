@@ -12,28 +12,25 @@ function love.touchmoved(id, ax, ay, dx, dy)
         return
     end
     if id ~= startID then return end
+    
+    --pprint("dx = "..dx, "dx")
+    --pprint("dy = "..dy, "dy")
     ax = ax / love.window.getPixelScale()
     ay = ay / love.window.getPixelScale()
     dx = ax - startX--dx / love.window.getPixelScale()
     dy = ay - startY--dy / love.window.getPixelScale()
-    gx = dx
-    gy = ax
-	if (pieceDirection.x == 0) then
-        if dx > asd * moveCount and curPiece.iPos.x <(gm.size - 1) then
+
+
+    if (pieceDirection.x == 0) then
+        if dx > asd and curPiece.iPos.x <(gm.size - 1) then
             movePiece(vector(1,0))
             startX = startX + asd
-            if love.timer.getTime() - lastMove < 0.3 then
-                moveCount = moveCount + 1
-            end
             lastMove = love.timer.getTime()
             animatePiece()
             moved = true
-        elseif dx < -asd * moveCount and curPiece.iPos.x > 0 then
+        elseif dx < -asd and curPiece.iPos.x > 0 then
             movePiece(vector(-1,0))
             startX = startX - asd
-            if love.timer.getTime() - lastMove < 0.3 then
-                moveCount = moveCount + 1
-            end
             lastMove = love.timer.getTime()
             animatePiece()
             moved = true
@@ -42,21 +39,15 @@ function love.touchmoved(id, ax, ay, dx, dy)
             dropPiece()
         end
     else
-        if dy < -asd * moveCount and curPiece.iPos.y > 0 then
+        if dy < -asd and curPiece.iPos.y > 0 then
             movePiece(vector(0,-1))
             startY = startY - asd
-            if love.timer.getTime() - lastMove < 0.3 then
-                moveCount = moveCount + 1
-            end
             lastMove = love.timer.getTime()
             animatePiece()
             moved = true
-        elseif dy > asd * moveCount and curPiece.iPos.y <(gm.size - 1) then
+        elseif dy > asd and curPiece.iPos.y <(gm.size - 1) then
             movePiece(vector(0,1))
             startY = startY + asd
-            if love.timer.getTime() - lastMove < 0.3 then
-                moveCount = moveCount + 1
-            end
             lastMove = love.timer.getTime()
             animatePiece()
             moved = true

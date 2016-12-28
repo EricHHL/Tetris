@@ -7,7 +7,7 @@ Class = require("lib.hump.class")
 Signal = require("lib.hump.signal")
 Camera = require("lib.hump.camera")
 
-gui = require("lib.gui.gui")
+GUI = require("lib.gui.guiCore")
 
 highscore = require("lib.sick")
 
@@ -29,8 +29,9 @@ function love.load()
     text = ""
     camera = Camera()
 
-    font = love.graphics.newFont("font/courbd.ttf", 24 * love.window.getPixelScale());
-    smallFont = love.graphics.newFont("font/courbd.ttf", 18 * love.window.getPixelScale());
+    font = love.graphics.newFont("font/Riffic-Bold.ttf", 24 * love.window.getPixelScale());
+    smallFont = love.graphics.newFont("font/Riffic-Bold.ttf", 18 * love.window.getPixelScale());
+    bigFont = love.graphics.newFont("font/Riffic-Bold.ttf", 64 * love.window.getPixelScale());
 
     love.graphics.setFont(font)
 
@@ -45,7 +46,7 @@ function love.load()
     texTextBox = love.graphics.newImage("textures/tileTextBox.png")
     texButton = love.graphics.newImage("textures/tile2bt.png")
 
-	GUI = gui()
+	--GUI = gui()
     GUI:newPanelType("button", texButton, 8, 48)
     GUI:newPanelType("textBox", texTextBox, 4, 56)
     Gamestate.switch(menu)
@@ -81,3 +82,5 @@ function loadSounds()
     sndPieceRotateFail = love.sound.newSoundData("sounds/SFX_PieceRotateFail.ogg")
     sndPieceDrop = love.sound.newSoundData("sounds/SFX_PieceFall.ogg")
 end
+
+require("debugTool")

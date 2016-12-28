@@ -9,7 +9,7 @@ background = Color(40)
 
 anims = { }
 
-baseUpdateFreq = 0.3
+baseUpdateFreq = 0.4
 
 nextUpdateHandle = nil
 
@@ -20,6 +20,7 @@ gdy = 0
 
 gx = 0
 gy = 0
+speed = 0
 
 score = 0
 
@@ -29,6 +30,7 @@ pxScale = love.window.getPixelScale()
 
 
 function game:init()
+    
 
 	texSideMenu = love.graphics.newImage("textures/sideMenu.png")
     texBorder = love.graphics.newImage("textures/bg.png")
@@ -75,7 +77,7 @@ function game:init()
 
     --Inicializa GUI
     frPause = GUI:Frame({x = gm.centerPos.x+gm.tileSize/2 - 150* pxScale, y =gm.centerPos.y - 120* pxScale, w = 300 * pxScale, h = 240* pxScale, 
-    	panelType = "textBox", color = Color(200), layout = "boxV", childHalign = "center"})
+    	panelType = "textBox", color = Color(200), layout = "gridV", childHalign = "center"})
     frPause:addChild(GUI:Label({text = "Pausado", color = Color(0), valign = "center"}))
     frPause:addChild(GUI:Button({text = "Continuar", callback = function() pause = false end, valign = "bottom"}))
     frPause:addChild(GUI:Button({text = "Menu", callback = function() 
@@ -84,13 +86,13 @@ function game:init()
         end, valign = "top"}))
     
     frGameOver = GUI:Frame({x = gm.centerPos.x+gm.tileSize/2 - 150 * pxScale, y =gm.centerPos.y - 200 * pxScale, w = 300 * pxScale, h =400 * pxScale,
-     panelType = "textBox", color = Color(200), layout = "boxV", childHalign = "center"})
+     panelType = "textBox", color = Color(200), layout = "gridV", childHalign = "center"})
     
     frGameOver:addChild(GUI:Label({text = "Game Over", color = Color(0)}))
     lbPontuacao = GUI:Label({font = smallFont, color = Color(0)})
     frGameOver:addChild(lbPontuacao)
 
-    frGameOver2 = GUI:Frame({w = 300 * pxScale, h = 250 * pxScale, layout = "boxV", childHalign = "center", weight = 3, text = "go2"})
+    frGameOver2 = GUI:Frame({w = 300 * pxScale, h = 250 * pxScale, layout = "gridV", childHalign = "center", weight = 3, text = "go2"})
 
     frGameOver2:addChild(GUI:Frame())
     frGameOver2:addChild(GUI:Button({text = "Novo jogo", callback = function() Gamestate.switch(game) end}))
@@ -160,7 +162,7 @@ function game:init()
         anims[aTile] = true
     end)
     
-    require("touchInput")
+    require("touchInput")   
 
 end
 
@@ -243,12 +245,6 @@ function game:draw()
 
     love.graphics.print("Pontos: " .. score, 10, 10)
     -- love.graphics.print("Ultima: "..lastScore, 10, 30)
-
-    --[[if gdx then
-    	love.graphics.print("dx = "..gx, 10, 50)
-    	love.graphics.print("dy = "..gy, 10, 80)
-    end
-    love.graphics.print(pxScale, 100,100)]]
 
     if (pause) then
         GUI:draw(frPause)
