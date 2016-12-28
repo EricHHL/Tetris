@@ -21,11 +21,12 @@ local function newDefaultButton()
 		wType = widgetType.button,
 
 		drawSelf = function(self)
-			if ((mx > self.x) and (mx < self.x + self.w) and (my > self.y) and (my < self.y + self.h)) then 	--Se o mouse estiver em cima do botao
+			--[[if ((mx > self.x) and (mx < self.x + self.w) and (my > self.y) and (my < self.y + self.h)) then 	--Se o mouse estiver em cima do botao
 				love.graphics.setColor(self.hoverColor:value())
-			else
+			else]]
+				--No android não tem hover
 				love.graphics.setColor(self.color:value())
-			end
+			--end
 			love.graphics.draw(self.batch, self.x, self.y, 0, 1, 1)
 			love.graphics.setColor(self.textColor:value())
 			love.graphics.setFont(self.font)

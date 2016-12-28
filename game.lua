@@ -5,7 +5,7 @@ game = { }
 
 debugMode = false
 
-background = Color(120)
+background = Color(40)
 
 anims = { }
 
@@ -25,6 +25,7 @@ score = 0
 
 -- TODO: No final, mostrar maior combo e tempo jogado
 
+pxScale = love.window.getPixelScale()
 
 
 function game:init()
@@ -33,18 +34,17 @@ function game:init()
     texBorder = love.graphics.newImage("textures/bg.png")
     borderSize = 20
 
-    local tSize = 22
     local mSize = 25
 
-    borderScale = (mSize*tSize)*(texBorder:getWidth()/(texBorder:getWidth()-borderSize)) / (texBorder:getWidth())
-    mPos = vector(10*borderScale,10*borderScale)
-    if love.system.getOS() == "Android" then
-    	tSize = math.floor(love.graphics.getHeight() / mSize)
-    	borderScale = (mSize*tSize)*(texBorder:getWidth()/(texBorder:getWidth()-borderSize)) / (texBorder:getWidth())
-    	mPos = vector(love.graphics.getWidth()/2 - (tSize*mSize)/2, 0)
-    end
+    
+    mPos = vector(0,0)
+    
+	local tSize = math.floor(love.graphics.getHeight() / mSize)
+	borderScale = (mSize*tSize)*(texBorder:getWidth()/(texBorder:getWidth()-borderSize)) / (texBorder:getWidth())
+	mPos = vector(love.graphics.getWidth()/2 - (tSize*mSize)/2, 0)
+
     gm = GameMap(mSize, tSize, mPos)
-    windowSize = vector((texBorder:getWidth() + texSideMenu:getWidth())*borderScale,texBorder:getWidth()*borderScale)
+    windowSize = vector((mSize*tSize + texSideMenu:getWidth()),mSize*tSize)
     love.window.setMode(windowSize.x, windowSize.y, { resizable = false, vsync = false, borderless = false })
     scale = gm.tileSize / texTile:getWidth()
 
@@ -74,7 +74,8 @@ function game:init()
     }
 
     --Inicializa GUI
-    frPause = GUI:Frame({x = gm.centerPos.x+gm.tileSize/2 - 150, y =gm.centerPos.y - 120, w = 300, h = 240, panelType = "textBox", color = Color(200), layout = "boxV", childHalign = "center"})
+    frPause = GUI:Frame({x = gm.centerPos.x+gm.tileSize/2 - 150* pxScale, y =gm.centerPos.y - 120* pxScale, w = 300 * pxScale, h = 240* pxScale, 
+    	panelType = "textBox", color = Color(200), layout = "boxV", childHalign = "center"})
     frPause:addChild(GUI:Label({text = "Pausado", color = Color(0), valign = "center"}))
     frPause:addChild(GUI:Button({text = "Continuar", callback = function() pause = false end, valign = "bottom"}))
     frPause:addChild(GUI:Button({text = "Menu", callback = function() 
@@ -82,31 +83,20 @@ function game:init()
             Gamestate.switch(menu) 
         end, valign = "top"}))
     
-    frGameOver = GUI:Frame({x = gm.centerPos.x+gm.tileSize/2 - 150, y =gm.centerPos.y - 200, w = 300, h =400, panelType = "textBox", color = Color(200), layout = "boxV", childHalign = "center"})
+    frGameOver = GUI:Frame({x = gm.centerPos.x+gm.tileSize/2 - 150 * pxScale, y =gm.centerPos.y - 200 * pxScale, w = 300 * pxScale, h =400 * pxScale,
+     panelType = "textBox", color = Color(200), layout = "boxV", childHalign = "center"})
     
     frGameOver:addChild(GUI:Label({text = "Game Over", color = Color(0)}))
     lbPontuacao = GUI:Label({font = smallFont, color = Color(0)})
     frGameOver:addChild(lbPontuacao)
 
-    frHighscore = GUI:Frame({w = 300, h = 250, layout = "boxV", childHalign = "center", weight = 3})
-
-    lbRecord = GUI:Label({font = smallFont, color = Color(0)})
-    tbName = GUI:TextBox({callback = function() btSalvarClick() end})
-    btSalvar = GUI:Button({text = "Salvar", callback = function() btSalvarClick() end, weight = 1.5})
-    frHighscore:addChild(lbRecord)
-    frHighscore:addChild(tbName)
-    frHighscore:addChild(btSalvar)
-
-    frGameOver2 = GUI:Frame({w = 300, h = 250, layout = "boxV", childHalign = "center", weight = 3, text = "go2"})
+    frGameOver2 = GUI:Frame({w = 300 * pxScale, h = 250 * pxScale, layout = "boxV", childHalign = "center", weight = 3, text = "go2"})
 
     frGameOver2:addChild(GUI:Frame())
     frGameOver2:addChild(GUI:Button({text = "Novo jogo", callback = function() Gamestate.switch(game) end}))
     frGameOver2:addChild(GUI:Button({text = "Menu", callback = function() Gamestate.switch(menu) end}))
 
-    frHighscore.active = false
-
     frGameOver:addChild(frGameOver2)
-    frGameOver:addChild(frHighscore)
 
 
     math.randomseed(os.time())
@@ -154,11 +144,7 @@ function game:init()
 
     end )
 
-	if love.system.getOS() == "Android" then
-		require("touchInput")
-	else
-		require("keyboardInput")
-	end
+	require("touchInput")
 
 end
 
@@ -178,8 +164,6 @@ function game:enter()
     comboCount = 0
 
     isGameOver = false
-    tbName.text = ""
-    isHighscore = false
 
     curPiece = newPiece()
 
@@ -248,7 +232,7 @@ function game:draw()
     	love.graphics.print("dx = "..gx, 10, 50)
     	love.graphics.print("dy = "..gy, 10, 80)
     end
-    love.graphics.print(love.window.getPixelScale(), 100,100)]]
+    love.graphics.print(pxScale, 100,100)]]
 
     if (pause) then
         GUI:draw(frPause)
@@ -277,6 +261,9 @@ function game:keypressed(key)
     	keyInput(key)
     end
     
+    if key == "escape" then
+    	pause = true
+    end
     
     if (key == 'z') then
         gameOver()
@@ -473,32 +460,8 @@ function gameOver()
     isGameOver = true
 
     lbPontuacao:setText("Pontuação: "..score)
-    for i, sc, name in highscore() do
-        if (i <= 10) then
-            if (score>sc) then
-            	isHighscore = true
-            	highscorePos = i
-            	break
-            end
-        end
-    end
-    if isHighscore and love.system.getOS() ~= "Android" then
-        lbRecord:setText(highscorePos.."º lugar")
-        frHighscore.active = true
-        frGameOver2.active = false
-    else
-        frHighscore.active = false
-        frGameOver2.active = true
-    end
-
-    frGameOver:refresh()
-end
-
-function btSalvarClick()
-    highscore.add(tbName.text, score)
-    highscore.save()
-    isHighscore = false
-    frHighscore.active = false
+    
     frGameOver2.active = true
+
     frGameOver:refresh()
 end

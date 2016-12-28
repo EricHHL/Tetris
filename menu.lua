@@ -22,10 +22,9 @@ function menu:init()
 
     pnMenu = GUI:Frame({y = 100, h = love.graphics.getHeight()-200, layout = "boxV"})
 
-    pnMenu:addChild(GUI:Label({text = "Tetris"}))
+    pnMenu:addChild(GUI:Label({text = "OmniBlocks"}))
     
     pnMenu:addChild(GUI:Button({text = "Jogar", callback = btJogarClick, color = Color(50, 50, 200), hoverColor = Color(80, 80, 250)}))
-    pnMenu:addChild(GUI:Button({text = "Placar", callback = btPlacarClick, color = Color(50, 50, 200), hoverColor = Color(80, 80, 250)}))
     pnMenu:addChild(GUI:Button({text = "Sair", callback = btSairClick, color = Color(50, 50, 200), hoverColor = Color(80, 80, 250)}))
 end
 
@@ -36,10 +35,6 @@ end
 
 function btJogarClick(b)
     Gamestate.switch(game)
-end
-
-function btPlacarClick(b)
-    Gamestate.switch(scoreboard)
 end
 
 function btSairClick(b)

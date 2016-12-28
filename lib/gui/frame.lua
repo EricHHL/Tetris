@@ -58,14 +58,7 @@ return function(self, args)
 	defaultFrame = newDefaultFrame()
 
 	local fr = {}
-
-	if args.w then
-		args.w = args.w * love.window.getPixelScale()
-	end
-	if args.h then
-		args.h = args.h * love.window.getPixelScale()
-	end
-
+	
 	for k,v in pairs(defaultFrame) do
 		fr[k] = args[k] or v
 	end
