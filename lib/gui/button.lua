@@ -52,6 +52,10 @@ return function(self, args)
 		bt[k] = args[k] or v
 	end
 
+	bt.w = bt.w * love.window.getPixelScale()
+	bt.h = bt.h * love.window.getPixelScale()
+
+
 	bt:refresh()
 
 	return bt

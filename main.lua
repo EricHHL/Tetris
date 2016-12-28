@@ -29,8 +29,9 @@ function love.load()
     text = ""
     camera = Camera()
 
-    font = love.graphics.newFont("font/courbd.ttf", 24);
-    smallFont = love.graphics.newFont("font/courbd.ttf", 18);
+    font = love.graphics.newFont("font/courbd.ttf", 24 * love.window.getPixelScale());
+    smallFont = love.graphics.newFont("font/courbd.ttf", 18 * love.window.getPixelScale());
+
     love.graphics.setFont(font)
 
     highscore.set("hs", 10, "", -1)
@@ -42,7 +43,7 @@ function love.load()
     texTile = love.graphics.newImage("textures/tile2.png")
     texTileBg = love.graphics.newImage("textures/tile2bg.png")
     texTextBox = love.graphics.newImage("textures/tileTextBox.png")
-    texButton = love.graphics.newImage("textures/tile2Bt.png")
+    texButton = love.graphics.newImage("textures/tile2bt.png")
 
 	GUI = gui()
     GUI:newPanelType("button", texButton, 8, 48)
