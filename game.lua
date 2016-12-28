@@ -196,8 +196,8 @@ function game:draw()
     -- Desenha peca atual
     love.graphics.setColor(curPiece.color:value())
     for indT, tile in ipairs(curPiece.tiles) do
-    	sPos = gm:localToScreen(curPiece.pos + tile)
-        love.graphics.draw(texTile, sPos.x, sPos.y, 0, scale, scale)
+    	sPos = gm:localToScreen(curPiece.pos + tile:permul(curPiece.scale/scale))
+        love.graphics.draw(texTile, sPos.x, sPos.y, 0, curPiece.scale.x, curPiece.scale.y)
     end
 
     -- Desenha pecas fixas
@@ -273,7 +273,6 @@ function game:keypressed(key)
         return
     end
     if keyInput then 
-    	print("asd")
     	keyInput(key)
     end
     
@@ -370,12 +369,27 @@ function animatePiece()
     end
     dist =(curPiece.pos - curPiece.iPos):len()
     duration = math.min(updateFreq / 2, 0.1)
-    if (dist > 3) then
+    if (dist > 3) then  --É um drop
         duration = updateFreq *(dist / 15)
+        local antScale = curPiece.scale:clone()
+        local targetScale = antScale:clone()
+        if pieceDirection.x ~= 0 then
+            targetScale.y = scale / 1.05
+        end
+        if pieceDirection.y ~= 0 then
+            targetScale.x = scale / 1.05
+        end
+        Timer.tween(duration/2, curPiece.scale, targetScale, "out-cubic",  function()
+            Timer.tween(duration/2, curPiece.scale, targetScale, "in-cubic", function() --Tem que usar targetScale de novo, não entendi
+                curPiece.scale = antScale
+            end)
+        end)
         -- TEsound.play(sndPieceDrop,"drop")
         -- TEsound.pitch("drop",0.208/duration)	--É irritante
     end
     pieceHandle = Timer.tween(duration, curPiece.pos, curPiece.iPos, 'in-out-quad', function()  end)
+
+    
 end
 
 -- Avança a peça ate colidir com alguma coisa
@@ -393,6 +407,7 @@ function dropPiece()
     newPos = newPos - pieceDirection
     curPiece.iPos = newPos
     animatePiece()
+
 
     -- Reseta o contador pro proximo gameUpdate, pra dar tempo pra terminar a animação de drop e dar tempo pro jogador mover a peça
     Timer.cancel(nextUpdateHandle)
@@ -422,6 +437,7 @@ function newPiece()
     end
     inst = pieces[round(math.random(1, #pieces))]:instance(pieceIPos)
     inst.pos = piecePos
+    inst.scale = vector(scale,scale)
     return inst
 end
 
